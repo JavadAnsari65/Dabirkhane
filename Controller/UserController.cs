@@ -97,7 +97,7 @@ public class UserController : Controller
         {
             return Ok("Haven't Code Requset. try Reset First");
         }
-        else if (DateTime.Now.AddMinutes(-10) < smsCheck.CreateDateTime)
+        else if (DateTime.Now.AddMinutes(-10) > smsCheck.CreateDateTime)
         { //Time Passed
             db.sms_tbl.Remove(smsCheck);
             return Ok("Code Time Expire ... Try again");
@@ -120,7 +120,11 @@ public class UserController : Controller
                 return Ok("Code is Invalid");
             }
         }
-        return Ok("YOU CANT SEE THIS");
+        else
+        {
+            return Ok("you Must Try 10 min later.");
+        }
+
     }
 
 
