@@ -1,4 +1,5 @@
 
+using IliaDabirkhane.Data.ReportModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 [Route("[Action]")]
@@ -73,11 +74,98 @@ public class MessageController : Controller
         }
     }
 
+    [HttpGet]
+    public IActionResult GetAllMessageNew([FromQuery] MessageDetailsFilter messageFilter, [FromQuery] ReciverDetailsFilter reciverFilter, [FromQuery] AttachDetailsFilter attachFilter, [FromQuery] PaginationFilter paginationFilter)
+    {
+        var query = db.Messages_tbl
+            .Include(x => x.SenderUser)
+            .Include(x => x.Recivers)
+                .ThenInclude(x=>x.Reciver)
+            .Include(x => x.Atteched)
+            .AsQueryable();
+
+        // Apply filters for Messages
+        if (messageFilter.Id.HasValue)
+            query = query.Where(m => m.Id == messageFilter.Id.Value);
+        if (messageFilter.CreateDateTime.HasValue)
+            query = query.Where(m => m.CreateDateTime == messageFilter.CreateDateTime.Value);
+        if (!string.IsNullOrEmpty(messageFilter.SerialNumber))
+            query = query.Where(m => m.SerialNumber.Contains(messageFilter.SerialNumber));
+        if (messageFilter.SenderUserId.HasValue)
+            query = query.Where(m => m.SenderUserId == messageFilter.SenderUserId.Value);
+        if (!string.IsNullOrEmpty(messageFilter.Subject))
+            query = query.Where(m => m.Subject.Contains(messageFilter.Subject));
+        if (!string.IsNullOrEmpty(messageFilter.BodyText))
+            query = query.Where(m => m.BodyText.Contains(messageFilter.BodyText));
+
+        // Apply filters for Sender User
+        if (!string.IsNullOrEmpty(messageFilter.Username_Sender))
+            query = query.Where(m => m.SenderUser.Username.Contains(messageFilter.Username_Sender));
+        if (!string.IsNullOrEmpty(messageFilter.Password_Sender))
+            query = query.Where(m => m.SenderUser.Password.Contains(messageFilter.Password_Sender));
+        if (!string.IsNullOrEmpty(messageFilter.Token_Sender))
+            query = query.Where(m => m.SenderUser.Token.Contains(messageFilter.Token_Sender));
+        if (!string.IsNullOrEmpty(messageFilter.FirstName_Sender))
+            query = query.Where(m => m.SenderUser.FirstName.Contains(messageFilter.FirstName_Sender));
+        if (!string.IsNullOrEmpty(messageFilter.LastName_Sender))
+            query = query.Where(m => m.SenderUser.LastName.Contains(messageFilter.LastName_Sender));
+        if (!string.IsNullOrEmpty(messageFilter.Phone_Sender))
+            query = query.Where(m => m.SenderUser.Phone.Contains(messageFilter.Phone_Sender));
+        if (!string.IsNullOrEmpty(messageFilter.Addres_Sender))
+            query = query.Where(m => m.SenderUser.Addres.Contains(messageFilter.Addres_Sender));
+        if (!string.IsNullOrEmpty(messageFilter.NatinalCode_Sender))
+            query = query.Where(m => m.SenderUser.NatinalCode.Contains(messageFilter.NatinalCode_Sender));
+        if (!string.IsNullOrEmpty(messageFilter.PerconalCode_Sender))
+            query = query.Where(m => m.SenderUser.PerconalCode.Contains(messageFilter.PerconalCode_Sender));
+
+        // Apply filters for Recivers
+        if (reciverFilter != null)
+        {
+            query = query.Where(m => m.Recivers.Any(r =>
+                (!reciverFilter.ReciverId.HasValue || r.ReciverId == reciverFilter.ReciverId.Value) &&
+                (!reciverFilter.MessageId.HasValue || r.MessageId == reciverFilter.MessageId.Value) &&
+                (string.IsNullOrEmpty(reciverFilter.Type) || r.Type.Contains(reciverFilter.Type)) &&
+                (string.IsNullOrEmpty(reciverFilter.Username_Rciver) || r.Reciver.Username.Contains(reciverFilter.Username_Rciver)) &&
+                (string.IsNullOrEmpty(reciverFilter.Password_Reciver) || r.Reciver.Password.Contains(reciverFilter.Password_Reciver)) &&
+                (string.IsNullOrEmpty(reciverFilter.Token_Reciver) || r.Reciver.Token.Contains(reciverFilter.Token_Reciver)) &&
+                (string.IsNullOrEmpty(reciverFilter.FirstName_Reciver) || r.Reciver.FirstName.Contains(reciverFilter.FirstName_Reciver)) &&
+                (string.IsNullOrEmpty(reciverFilter.LastName_Reciver) || r.Reciver.LastName.Contains(reciverFilter.LastName_Reciver)) &&
+                (string.IsNullOrEmpty(reciverFilter.Phone_Reciver) || r.Reciver.Phone.Contains(reciverFilter.Phone_Reciver)) &&
+                (string.IsNullOrEmpty(reciverFilter.Addres_Reciver) || r.Reciver.Addres.Contains(reciverFilter.Addres_Reciver)) &&
+                (string.IsNullOrEmpty(reciverFilter.NatinalCode_Reciver) || r.Reciver.NatinalCode.Contains(reciverFilter.NatinalCode_Reciver)) &&
+                (string.IsNullOrEmpty(reciverFilter.PerconalCode_Reciver) || r.Reciver.PerconalCode.Contains(reciverFilter.PerconalCode_Reciver))
+            ));
+        }
+
+        // Apply filters for Atteched
+        if (attachFilter != null)
+        {
+            query = query.Where(m => m.Atteched.Any(a =>
+                (string.IsNullOrEmpty(attachFilter.FileName) || a.FileName.Contains(attachFilter.FileName)) &&
+                (string.IsNullOrEmpty(attachFilter.FilePath) || a.FilePath.Contains(attachFilter.FilePath)) &&
+                (string.IsNullOrEmpty(attachFilter.FileType) || a.FileType.Contains(attachFilter.FileType))
+            ));
+        }
+
+        // Get total count before pagination
+        var totalCount = query.Count();
+
+        // Apply pagination
+        var pagedData = query
+            .Skip((paginationFilter.PageNumber - 1) * paginationFilter.PageSize)
+            .Take(paginationFilter.PageSize)
+            .ToList();
+
+        // Calculate total pages
+        var totalPages = (int)Math.Ceiling((double)totalCount / paginationFilter.PageSize);
+
+        var pagedResponse = new PagedResponse<List<Messages>>(pagedData, paginationFilter.PageNumber, paginationFilter.PageSize, totalPages, totalCount);
+
+        return Ok(pagedResponse);
+    }
 
 
-
- [HttpGet]
-
+    [HttpGet]
     public async Task<IActionResult> Getallmessage([FromQuery] PaginationFilter filter, [FromQuery] Messages msg)
     {
        try

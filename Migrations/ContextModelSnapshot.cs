@@ -118,34 +118,34 @@ namespace IliaDabirkhane.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("Id"));
 
-                    b.Property<string>("Addres")
+                    b.Property<string>("Addres_Sender")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("CreateDateTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("FirstName")
+                    b.Property<string>("FirstName_Sender")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("LastName")
+                    b.Property<string>("LastName_Sender")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("NatinalCode")
+                    b.Property<string>("NatinalCode_Sender")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Password")
+                    b.Property<string>("Password_Sender")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PerconalCode")
+                    b.Property<string>("PerconalCode_Sender")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Phone")
+                    b.Property<string>("Phone_Sender")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Token")
+                    b.Property<string>("Token_Sender")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Username")
+                    b.Property<string>("Username_Sender")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");

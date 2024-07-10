@@ -40,12 +40,3 @@
         public int TotalPages { get; set; }
         public int TotalCount { get; set; }
     }
-
-
-
-
-
-
-    
-
-    

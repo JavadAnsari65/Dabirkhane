@@ -10,7 +10,7 @@ public class Context : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        //optionsBuilder.UseSqlServer("Data Source=./;Initial Catalog=IliaDabirkhane;User Id=sa;Password=12345@Iran;MultipleActiveResultSets=true;TrustServerCertificate=true;");
+        //optionsBuilder.UseSqlServer("Data Source=./;Initial Catalog=IliaDabirkhane;User Id=sa;Password_Sender=12345@Iran;MultipleActiveResultSets=true;TrustServerCertificate=true;");
         optionsBuilder.UseSqlServer("Data Source=.;Initial Catalog=IliaDabirkhane;Integrated Security=True;MultipleActiveResultSets=true;Trust Server Certificate=True");
 
     }
