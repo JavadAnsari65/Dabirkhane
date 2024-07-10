@@ -153,6 +153,32 @@ namespace IliaDabirkhane.Migrations
                     b.ToTable("Users_tbl");
                 });
 
+            modelBuilder.Entity("smsUser", b =>
+                {
+                    b.Property<int?>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("Id"));
+
+                    b.Property<DateTime?>("CreateDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsValid")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("SmsCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("sms_tbl");
+                });
+
             modelBuilder.Entity("Atteched", b =>
                 {
                     b.HasOne("Messages", "Message")
